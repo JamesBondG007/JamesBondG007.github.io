@@ -2,67 +2,72 @@
 <head>
 <title>007</title>
 <style>
-  *::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: lime; /* Set the color to lime */
-  mix-blend-mode: luminosity; /* Use the luminosity blend mode */
-  pointer-events: none;
-  }
-  *::after {
-  color-blend-mode:
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: repeating-linear-gradient(0deg, rgba(128, 128, 128, 0.5) 1%, transparent 2%, transparent 2%);
-  pointer-events: none;
-  animation: interlace 2s linear infinite, scanlines 2s linear infinite; /* Adjust animation duration as needed */
+  body {
+  font-family: 'Courier New', monospace;
+  background-color: #002000;
+  color: #fff;
+  line-height: 1.6;
+  padding: 20px;
+  position: relative;
 }
 
-@keyframes interlace {
-  0%,100% {
-    background-size: 100% 5%;
+a {
+  color: #00ff00;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    linear-gradient(to bottom, transparent 98%, rgba(0, 0, 0, 0.2) 98%, rgba(0, 0, 0, 0.2) 100%),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 1px, transparent 1px),
+    repeating-linear-gradient(rgba(255, 255, 255, 0.1) 0px, rgba(255, 255, 255, 0.1) 1px, transparent 1px, transparent 2px);
+  background-size: 100% 20px;
+  pointer-events: none;
+  z-index: 9999;
+  animation: scanlineAnimation 1s linear infinite;
+}
+
+@keyframes scanlineAnimation {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 20px;
+  }
+}
+
+.cursor::after {
+  content: "|";
+  display: inline-block;
+  animation: blinkCursor 1s step-end infinite;
+}
+
+@keyframes blinkCursor {
+  0%, 100% {
+    visibility: visible;
   }
   50% {
-    background-size: 100% 5%;
+    visibility: hidden;
   }
 }
 
-@keyframes scanlines {
-  from {
-    background-position: 0 0%;
-  }
-  to {
-    background-position: 0 100%;
-  }
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #004000; /* Set to green */
+  mix-blend-mode: color; /* Apply the hue mix blend mode */
+  opacity: 0.75; /* Adjust opacity as needed */
+  z-index: 9998; /* Adjust z-index to ensure it's below the scanline effect */
 }
-    html{
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    color: lime; 
-    background-color: #001000; 
-    text-align: center; 
-    animation: hueShift 10s infinite linear;
-    margin: 0;
-    }
-    @keyframes hueShift {
-    0% {
-      filter: hue-rotate(0deg);
-    }
-    100% {
-      filter: hue-rotate(360deg);
-    }
-  }
 </style>
 </head>
 <body>
