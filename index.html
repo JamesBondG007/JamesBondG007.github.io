@@ -1,77 +1,40 @@
-<!DOCTYPE HTML>
-<head>
-<title>007</title>
-<style>
-  body {
-  font-family: 'Courier New', monospace;
-  background-color: #002000;
-  color: #fff;
-  line-height: 1.6;
-  padding: 20px;
-  position: relative;
+<canvas></canvas>
+<script>// Initialising the canvas
+var canvas = document.querySelector('canvas'),
+    ctx = canvas.getContext('2d');
+
+// Setting the width and height of the canvas
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+// Setting up the letters
+var letters = '';
+letters = letters.split('あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんアイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン〇一二三四五六七八九');
+
+// Setting up the columns
+var fontSize = 10,
+    columns = canvas.width / fontSize;
+
+// Setting up the drops
+var drops = [];
+for (var i = 0; i < columns; i++) {
+  drops[i] = 1;
 }
 
-a {
-  color: #00ff00;
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: 
-    linear-gradient(to bottom, transparent 98%, rgba(0, 0, 0, 0.2) 98%, rgba(0, 0, 0, 0.2) 100%),
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 1px, transparent 1px),
-    repeating-linear-gradient(rgba(255, 255, 255, 0.1) 0px, rgba(255, 255, 255, 0.1) 1px, transparent 1px, transparent 2px);
-  background-size: 100% 20px;
-  pointer-events: none;
-  z-index: 9999;
-  animation: scanlineAnimation 1s linear infinite;
-}
-
-@keyframes scanlineAnimation {
-  0% {
-    background-position: 0 0;
-  }
-  100% {
-    background-position: 0 20px;
+// Setting up the draw function
+function draw() {
+  ctx.fillStyle = 'rgba(0, 0, 0, .1)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  for (var i = 0; i < drops.length; i++) {
+    var text = letters[Math.floor(Math.random() * letters.length)];
+    ctx.fillStyle = '#0f0';
+    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+    drops[i]++;
+    if (drops[i] * fontSize > canvas.height && Math.random() > .95) {
+      drops[i] = 0;
+    }
   }
 }
 
-.cursor::after {
-  content: "|";
-  display: inline-block;
-  animation: blinkCursor 1s step-end infinite;
-}
-
-@keyframes blinkCursor {
-  0%, 100% {
-    visibility: visible;
-  }
-  50% {
-    visibility: hidden;
-  }
-}
-
-body::after {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events:none;
-  background-color: #004000; /* Set to green */
-  mix-blend-mode: color; /* Apply the hue mix blend mode */
-  opacity: 0.75; /* Adjust opacity as needed */
-  z-index: 9998; /* Adjust z-index to ensure it's below the scanline effect */
-}
-</style>
-</head>
-<body>
-  <h1>007</h1>
-</body>
-</html>
+// Loop the animation
+setInterval(draw, 33);</script>
