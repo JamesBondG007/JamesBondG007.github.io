@@ -1,72 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Matrix Rain</title>
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      background-color: black;
-    }
 
-    .matrix {
-      position: absolute;
-      top: 0;
-      left: 0;
-      color: #0F0; /* Matrix green color */
-      font-family: "Courier New", monospace;
-      font-size: 20px;
-      pointer-events: none;
-    }
-  </style>
-</head>
-<body>
-  <div class="matrix"></div>
-  <script>
-    const matrix = document.querySelector('.matrix');
-    const columns = Math.floor(window.innerWidth / 20);
-    const streams = [];
+    ctx = canvas.getContext('2d');
 
-    // Array of Japanese characters including kanji, hiragana, and katakana
-    const japaneseCharacters = Array.from({ length: 100 }, (_, i) => {
-      const start = Math.floor(Math.random() * (0x4E00 - 0x3040)) + 0x3040; // Range for hiragana and katakana
-      const end = Math.floor(Math.random() * (0x9FFF - 0x4E00)) + 0x4E00; // Range for kanji
-      return String.fromCharCode(Math.floor(Math.random() * (end - start + 1)) + start);
-    });
+// Setting the width and height of the canvas
 
-    for (let i = 0; i < columns; i++) {
-      streams.push({
-        x: i * 20,
-        y: Math.floor(Math.random() * -1000),
-        speed: Math.floor(Math.random() * (10 - 5 + 1)) + 5,
-        length: Math.floor(Math.random() * (20 - 10 + 1)) + 10,
-        characters: []
-      });
-    }
+canvas.width = window.innerWidth;
 
-    function updateMatrix() {
-      matrix.innerHTML = '';
+canvas.height = window.innerHeight;
 
-      streams.forEach(stream => {
-        for (let i = 0; i < stream.length; i++) {
-          stream.characters[i] = japaneseCharacters[Math.floor(Math.random() * japaneseCharacters.length)];
-        }
+// Setting up the characters
 
-        stream.y += stream.speed;
+var characters = '';
 
-        if (stream.y > window.innerHeight) {
-          stream.y = Math.floor(Math.random() * -1000);
-        }
+for (var i = 0; i <= 0x10FFFF; i++) {
 
-        matrix.innerHTML += `<div style="position: absolute; top: ${stream.y}px; left: ${stream.x}px;">${stream.characters.join('')}</div>`;
-      });
+  characters += String.fromCharCode(i);
 
-      requestAnimationFrame(updateMatrix);
-    }
+}
 
-    updateMatrix();
-  </script>
-</body>
-</html>
+characters = characters.split('');
+
+// Setting up the columns
+
+var fontSize = 20,
+
+    columns = canvas.width / fontSize;
+
+// Setting up the drops
+
+var drops = [];
+
+for (var i = 0; i < columns; i++) {
+
+  drops[i] = 1;
+
+}
+
+// Setting up the draw function
