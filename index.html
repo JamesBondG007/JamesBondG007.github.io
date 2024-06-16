@@ -1,3 +1,4 @@
+/htmlstart
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -68,40 +69,59 @@
     <header>
         <h1>PHP Discord Clone</h1>
     </header>
-    <div class="container">
-        <div id="chat" class="message">
-            <p class="user">User123:</p>
-            <p>Hello everyone!</p>
-        </div>
-        <div id="chat" class="message">
-            <p class="user">CoolCat97:</p>
-            <p>Hey there!</p>
-        </div>
-        <div id="chat" class="message">
-            <p class="user">NewbieUser:</p>
-            <p>This is awesome!</p>
-        </div>
-        <div id="chat" class="message">
-            <p class="user">AdminBot:</p>
-            <p>Welcome to PHP Discord Clone!</p>
-        </div>
-        <div class="input-box">
-            <input type="text" id="username" placeholder="Your username">
-            <textarea id="message" rows="3" placeholder="Type your message..."></textarea>
-            <button onclick="sendMessage()">Send</button>
-        </div>
+    <div class="container" id="messageContainer">
+        <!-- Messages will appear here -->
+    </div>
+    <div class="input-box">
+        <input type="text" id="username" placeholder="Your username">
+        <textarea id="message" rows="3" placeholder="Type your message..."></textarea>
+        <button onclick="sendMessage()">Send</button>
     </div>
 
     <script>
         function sendMessage() {
             var username = document.getElementById("username").value;
             var message = document.getElementById("message").value;
-            var chatbox = document.createElement("div");
-            chatbox.className = "message";
-            chatbox.innerHTML = '<p class="user">' + username + ':</p><p>' + message + '</p>';
-            document.getElementById("chat").appendChild(chatbox);
+
+            // Create a new message element
+            var messageElement = document.createElement("div");
+            messageElement.className = "message";
+            var userElement = document.createElement("p");
+            userElement.className = "user";
+            userElement.textContent = username + ":";
+            var textElement = document.createElement("p");
+            textElement.textContent = message;
+
+            // Append user and text elements to message element
+            messageElement.appendChild(userElement);
+            messageElement.appendChild(textElement);
+
+            // Append message element to message container
+            var messageContainer = document.getElementById("messageContainer");
+            messageContainer.appendChild(messageElement);
+
+            // Clear input fields
+            document.getElementById("username").value = "";
             document.getElementById("message").value = "";
+
+            // Save message to server (dummy AJAX request)
+            saveMessage(username, message);
+        }
+
+        function saveMessage(username, message) {
+            // Dummy AJAX request (replace with actual server-side script)
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "save_message.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    console.log("Message saved successfully.");
+                }
+            };
+            var data = "username=" + encodeURIComponent(username) + "&message=" + encodeURIComponent(message);
+            xhr.send(data);
         }
     </script>
 </body>
 </html>
+/htmlend
