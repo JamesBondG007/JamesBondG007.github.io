@@ -3,173 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebGL Text Rendering</title>
+    <title>PHP Discord Clone</title>
     <style>
         body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
             margin: 0;
-            overflow: hidden;
+            padding: 0;
         }
-        canvas {
-            display: block;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #7289da;
+            color: #ffffff;
+            text-align: center;
+            padding: 10px 0;
+        }
+        h1 {
+            font-size: 2em;
+        }
+        .message {
+            background-color: #ffffff;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+        .message p {
+            margin: 5px 0;
+        }
+        .message .user {
+            font-weight: bold;
+            color: #7289da;
+        }
+        .input-box {
+            margin-top: 20px;
+        }
+        .input-box input[type="text"],
+        .input-box textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .input-box button {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #7289da;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .input-box button:hover {
+            background-color: #6272a4;
         }
     </style>
 </head>
 <body>
-    <canvas id="glcanvas"></canvas>
+    <header>
+        <h1>PHP Discord Clone</h1>
+    </header>
+    <div class="container">
+        <div id="chat" class="message">
+            <p class="user">User123:</p>
+            <p>Hello everyone!</p>
+        </div>
+        <div id="chat" class="message">
+            <p class="user">CoolCat97:</p>
+            <p>Hey there!</p>
+        </div>
+        <div id="chat" class="message">
+            <p class="user">NewbieUser:</p>
+            <p>This is awesome!</p>
+        </div>
+        <div id="chat" class="message">
+            <p class="user">AdminBot:</p>
+            <p>Welcome to PHP Discord Clone!</p>
+        </div>
+        <div class="input-box">
+            <input type="text" id="username" placeholder="Your username">
+            <textarea id="message" rows="3" placeholder="Type your message..."></textarea>
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
     <script>
-        function main() {
-            const canvas = document.getElementById("glcanvas");
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-
-            const gl = canvas.getContext("webgl");
-
-            if (!gl) {
-                console.error("Unable to initialize WebGL. Your browser or machine may not support it.");
-                return;
-            }
-
-            // Text canvas
-            const textCanvas = document.createElement('canvas');
-            const textContext = textCanvas.getContext('2d');
-            textCanvas.width = 512;
-            textCanvas.height = 512;
-
-            // Draw text
-            textContext.fillStyle = 'white';
-            textContext.font = '48px sans-serif';
-            textContext.fillText('Hello, WebGL!', 10, 50);
-
-            // Create texture
-            const textTexture = gl.createTexture();
-            gl.bindTexture(gl.TEXTURE_2D, textTexture);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textCanvas);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-
-            // Vertex shader program
-            const vsSource = `
-                attribute vec4 aVertexPosition;
-                attribute vec2 aTextureCoord;
-                varying highp vec2 vTextureCoord;
-                void main(void) {
-                    gl_Position = aVertexPosition;
-                    vTextureCoord = aTextureCoord;
-                }
-            `;
-
-            // Fragment shader program
-            const fsSource = `
-                varying highp vec2 vTextureCoord;
-                uniform sampler2D uSampler;
-                void main(void) {
-                    gl_FragColor = texture2D(uSampler, vTextureCoord);
-                }
-            `;
-
-            const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
-
-            const programInfo = {
-                program: shaderProgram,
-                attribLocations: {
-                    vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
-                    textureCoord: gl.getAttribLocation(shaderProgram, 'aTextureCoord'),
-                },
-                uniformLocations: {
-                    uSampler: gl.getUniformLocation(shaderProgram, 'uSampler'),
-                },
-            };
-
-            const buffers = initBuffers(gl);
-
-            drawScene(gl, programInfo, buffers, textTexture);
+        function sendMessage() {
+            var username = document.getElementById("username").value;
+            var message = document.getElementById("message").value;
+            var chatbox = document.createElement("div");
+            chatbox.className = "message";
+            chatbox.innerHTML = '<p class="user">' + username + ':</p><p>' + message + '</p>';
+            document.getElementById("chat").appendChild(chatbox);
+            document.getElementById("message").value = "";
         }
-
-        function initShaderProgram(gl, vsSource, fsSource) {
-            const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vsSource);
-            const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
-
-            const shaderProgram = gl.createProgram();
-            gl.attachShader(shaderProgram, vertexShader);
-            gl.attachShader(shaderProgram, fragmentShader);
-            gl.linkProgram(shaderProgram);
-
-            if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-                console.error('Unable to initialize the shader program: ' + gl.getProgramInfoLog(shaderProgram));
-                return null;
-            }
-
-            return shaderProgram;
-        }
-
-        function loadShader(gl, type, source) {
-            const shader = gl.createShader(type);
-            gl.shaderSource(shader, source);
-            gl.compileShader(shader);
-
-            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-                console.error('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader));
-                gl.deleteShader(shader);
-                return null;
-            }
-
-            return shader;
-        }
-
-        function initBuffers(gl) {
-            const positionBuffer = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-            const positions = [
-                 1.0,  1.0,
-                -1.0,  1.0,
-                 1.0, -1.0,
-                -1.0, -1.0,
-            ];
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
-
-            const textureCoordBuffer = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
-            const textureCoordinates = [
-                1.0,  0.0,
-                0.0,  0.0,
-                1.0,  1.0,
-                0.0,  1.0,
-            ];
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordinates), gl.STATIC_DRAW);
-
-            return {
-                position: positionBuffer,
-                textureCoord: textureCoordBuffer,
-            };
-        }
-
-        function drawScene(gl, programInfo, buffers, texture) {
-            gl.clearColor(0.0, 0.0, 0.0, 1.0);
-            gl.clearDepth(1.0);
-            gl.enable(gl.DEPTH_TEST);
-            gl.depthFunc(gl.LEQUAL);
-
-            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-            gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
-            gl.vertexAttribPointer(programInfo.attribLocations.vertexPosition, 2, gl.FLOAT, false, 0, 0);
-            gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
-
-            gl.bindBuffer(gl.ARRAY_BUFFER, buffers.textureCoord);
-            gl.vertexAttribPointer(programInfo.attribLocations.textureCoord, 2, gl.FLOAT, false, 0, 0);
-            gl.enableVertexAttribArray(programInfo.attribLocations.textureCoord);
-
-            gl.useProgram(programInfo.program);
-
-            gl.activeTexture(gl.TEXTURE0);
-            gl.bindTexture(gl.TEXTURE_2D, texture);
-            gl.uniform1i(programInfo.uniformLocations.uSampler, 0);
-
-            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-        }
-
-        window.onload = main;
     </script>
 </body>
 </html>
