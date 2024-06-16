@@ -83,98 +83,52 @@
     </div>
 
     <script>
-        // Load initial messages from storage when the page loads
-        document.addEventListener("DOMContentLoaded", function() {
-            loadMessages();
-        });
+    function sendMessage() {
+        var username = document.getElementById("username").value;
+        var message = document.getElementById("message").value;
 
-        function sendMessage() {
-            var username = document.getElementById("username").value;
-            var message = document.getElementById("message").value;
+        // Create a new message element
+        var messageElement = document.createElement("div");
+        messageElement.className = "message";
+        var userElement = document.createElement("p");
+        userElement.className = "user";
+        userElement.textContent = username + ":";
+        var textElement = document.createElement("p");
+        textElement.textContent = message;
+        var timestampElement = document.createElement("p");
+        timestampElement.className = "timestamp";
+        timestampElement.textContent = getCurrentTimestamp();
 
-            // Create a new message element
-            var messageElement = document.createElement("div");
-            messageElement.className = "message";
-            var userElement = document.createElement("p");
-            userElement.className = "user";
-            userElement.textContent = username + ":";
-            var textElement = document.createElement("p");
-            textElement.textContent = message;
-            var timestampElement = document.createElement("p");
-            timestampElement.className = "timestamp";
-            timestampElement.textContent = getCurrentTimestamp();
+        // Append user, text, and timestamp elements to message element
+        messageElement.appendChild(userElement);
+        messageElement.appendChild(textElement);
+        messageElement.appendChild(timestampElement);
 
-            // Append user, text, and timestamp elements to message element
-            messageElement.appendChild(userElement);
-            messageElement.appendChild(textElement);
-            messageElement.appendChild(timestampElement);
+        // Append message element to message container
+        var messageContainer = document.getElementById("messageContainer");
+        messageContainer.appendChild(messageElement);
 
-            // Append message element to message container
-            var messageContainer = document.getElementById("messageContainer");
-            messageContainer.appendChild(messageElement);
+        // Clear input fields
+        document.getElementById("username").value = "";
+        document.getElementById("message").value = "";
 
-            // Clear input fields
-            document.getElementById("username").value = "";
-            document.getElementById("message").value = "";
+        // Save message to server using AJAX
+        saveMessage(username, message);
+    }
 
-            // Save message to storage
-            saveMessage(username, message);
-        }
-
-        function saveMessage(username, message) {
-            // Dummy function to simulate saving to storage (replace with actual server-side script)
-            var messages = JSON.parse(localStorage.getItem("messages")) || [];
-            var newMessage = {
-                username: username,
-                message: message,
-                timestamp: new Date().toISOString()
-            };
-            messages.push(newMessage);
-            localStorage.setItem("messages", JSON.stringify(messages));
-
-            // Clean up old messages if exceeding max limit (1000 messages)
-            if (messages.length > 1000) {
-                messages.splice(0, messages.length - 1000);
-                localStorage.setItem("messages", JSON.stringify(messages));
+    function saveMessage(username, message) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "save_message.php", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                console.log("Message saved successfully.");
             }
-        }
-
-        function loadMessages() {
-            // Load messages from storage and display them
-            var messages = JSON.parse(localStorage.getItem("messages")) || [];
-            var messageContainer = document.getElementById("messageContainer");
-            messageContainer.innerHTML = ""; // Clear existing messages
-
-            messages.forEach(function(msg) {
-                var messageElement = document.createElement("div");
-                messageElement.className = "message";
-                var userElement = document.createElement("p");
-                userElement.className = "user";
-                userElement.textContent = msg.username + ":";
-                var textElement = document.createElement("p");
-                textElement.textContent = msg.message;
-                var timestampElement = document.createElement("p");
-                timestampElement.className = "timestamp";
-                timestampElement.textContent = formatDate(new Date(msg.timestamp));
-
-                messageElement.appendChild(userElement);
-                messageElement.appendChild(textElement);
-                messageElement.appendChild(timestampElement);
-
-                messageContainer.appendChild(messageElement);
-            });
-        }
-
-        function formatDate(date) {
-            var options = { year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "numeric" };
-            return date.toLocaleDateString("en-US", options);
-        }
-
-        function getCurrentTimestamp() {
-            var now = new Date();
-            return formatDate(now);
-        }
-    </script>
+        };
+        var data = "username=" + encodeURIComponent(username) + "&message=" + encodeURIComponent(message);
+        xhr.send(data);
+    }
+</script>
 </body>
 </html>
 /htmlend
