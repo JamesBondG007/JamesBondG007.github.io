@@ -12,8 +12,16 @@
             background-color: black;
             overflow: hidden;
             font-family: "Courier New", Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            position: relative; /* Makes sure the text is below the overlay */
+            z-index: 0; /* Ensures text is behind the overlay */
+            color:#00FF00;
         }
 
+        /* CRT Overlay */
         .crt-overlay {
             position: absolute;
             top: 0;
@@ -29,6 +37,8 @@
             );
             background-size: 100% 4px;
             animation: scanlines .1s linear infinite;
+            z-index: 1; /* Ensure the overlay is on top of the text */
+            pointer-events: none; /* Ensure the overlay doesn’t interfere with interactions */
         }
 
         @keyframes scanlines {
@@ -39,10 +49,15 @@
                 background-position: 0 4px;
             }
         }
+
+
     </style>
 </head>
-<body class="crt-overlay">
+<body>
     <h1>JamesBondG007</h1>
     <p>Hi I'm 007 and I like tech, cars and gaming.</p>
+
+    <!-- CRT Scanline Overlay -->
+    <div class="crt-overlay"></div>
 </body>
 </html>
