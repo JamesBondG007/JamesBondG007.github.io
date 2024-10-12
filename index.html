@@ -4,14 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JamesBondG007</title>
+    <link href='https://fonts.googleapis.com/css?family=Titillium Web' rel='stylesheet'>
     <style>
+    	a{
+        color:#00FF00;
+        }
         body {
             margin: 0;
             padding: 0;
             height: 100vh;
             background-color: black;
             overflow: hidden;
-            font-family: "Courier New", Courier, monospace;
+            font-family: 'Titillium Web';
             display: flex;
             justify-content: center;
             align-items: center;
@@ -32,9 +36,9 @@
             background: repeating-linear-gradient(
                 to bottom,
                 transparent 0px,
-                transparent 2px,
-                black 2px,
-                black 4px
+                transparent 1px,
+                black 1px,
+                black 2px
             );
             background-size: 100% 4px;
             animation: scanlines .1s linear infinite;
@@ -47,7 +51,7 @@
                 background-position: 0 0;
             }
             100% {
-                background-position: 0 4px;
+                background-position: 0 2px;
             }
         }
 
@@ -57,6 +61,7 @@
 <body>
     <h1>JamesBondG007</h1>
     <p>Hi I'm James and I like tech, cars and gaming.</p>
+    <a href="https://docs.google.com/spreadsheets/d/1W_02LyTSUJPqzLmat5SJM3KBZiAWBpfIcDMkwDy2DWI/edit?usp=sharing">Heres My Wishlist</a>
 
     <!-- CRT Scanline Overlay -->
     <div class="crt-overlay"></div>
