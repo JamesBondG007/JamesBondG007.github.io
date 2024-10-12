@@ -40,11 +40,11 @@
             background: repeating-linear-gradient(
                 to bottom,
                 transparent 0px,
-                transparent 1.5px,
-                black 1.5px,
-                black 3px
+                transparent 1px,
+                black 1px,
+                black 2px
             );
-            background-size: 100% 4px;
+            background-size: 100% 2px;
             animation: scanlines .1s linear infinite;
             z-index: 1; /* Ensure the overlay is on top of the text */
             pointer-events: none; /* Ensure the overlay doesn’t interfere with interactions */
@@ -55,7 +55,7 @@
                 background-position: 0 0;
             }
             100% {
-                background-position: 0 3px;
+                background-position: 0 2px;
             }
         }
 
