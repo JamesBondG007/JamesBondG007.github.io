@@ -19,7 +19,7 @@
 
 <script>
 const CLIENT_ID = "0c61694d0de448e0ab8eb089d98cf476";
-const REDIRECT_URI = window.location.origin + "/";
+const REDIRECT_URI = window.location.href.split('#')[0];
 const SCOPES = "playlist-modify-public playlist-modify-private";
 
 function getTokenFromHash() {
