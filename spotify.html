@@ -11,17 +11,21 @@
 </head>
 <body>
 <h1>Spotify Artist Playlist Generator</h1>
-<p>Enter an artist name to generate a playlist of all their songs (sorted by popularity).</p>
+<p id="intro">Login with Spotify first, then enter an artist name to generate a playlist.</p>
 
-<input id="artist" placeholder="Artist name">
-<button id="go">Generate Playlist</button>
-<p id="status"></p>
+<button id="login">Login with Spotify</button>
+<div id="app" style="display:none;">
+  <input id="artist" placeholder="Artist name">
+  <button id="go">Generate Playlist</button>
+  <p id="status"></p>
+</div>
 
 <script>
 const CLIENT_ID = "0c61694d0de448e0ab8eb089d98cf476";
 const REDIRECT_URI = "https://jamesbondg007.github.io/spotify"; // must exactly match Spotify dashboard
 const SCOPES = "playlist-modify-public playlist-modify-private";
 
+// Extract token from URL hash
 function getTokenFromHash() {
   const hash = window.location.hash.substring(1).split('&').reduce((acc, cur) => {
     const [k, v] = cur.split('=');
@@ -31,19 +35,20 @@ function getTokenFromHash() {
   return hash.access_token;
 }
 
-async function authenticate() {
-  const token = getTokenFromHash();
-  if (token) return token;
+// Redirect to Spotify login
+function login() {
   const authURL = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(SCOPES)}`;
   window.location = authURL;
 }
 
+// Fetch JSON with auth
 async function getJSON(url, token) {
   const res = await fetch(url, { headers: { Authorization: "Bearer " + token } });
   if (!res.ok) throw new Error(await res.text());
   return res.json();
 }
 
+// Fetch paginated results
 async function fetchAll(url, token) {
   let results = [];
   while (url) {
@@ -54,22 +59,22 @@ async function fetchAll(url, token) {
   return results;
 }
 
-async function main() {
-  document.getElementById("status").textContent = "Authenticating...";
-  const token = await authenticate();
+// Main playlist generator
+async function main(token) {
   const artistName = document.getElementById("artist").value.trim();
   if (!artistName) return alert("Enter an artist name first!");
+  const status = document.getElementById("status");
+  status.textContent = "Searching artist...";
 
-  document.getElementById("status").textContent = "Searching artist...";
   const search = await getJSON(`https://api.spotify.com/v1/search?q=${encodeURIComponent(artistName)}&type=artist&limit=1`, token);
   const artist = search.artists.items[0];
   if (!artist) return alert("Artist not found.");
 
-  document.getElementById("status").textContent = "Fetching albums...";
+  status.textContent = "Fetching albums...";
   const albums = await fetchAll(`https://api.spotify.com/v1/artists/${artist.id}/albums?include_groups=album,single,appears_on&limit=50`, token);
 
   const trackMap = new Map();
-  document.getElementById("status").textContent = `Gathering tracks from ${albums.length} albums...`;
+  status.textContent = `Gathering tracks from ${albums.length} albums...`;
 
   for (const album of albums) {
     const tracks = await fetchAll(`https://api.spotify.com/v1/albums/${album.id}/tracks?limit=50`, token);
@@ -79,7 +84,7 @@ async function main() {
   }
 
   const trackIds = Array.from(trackMap.keys());
-  document.getElementById("status").textContent = `Loaded ${trackIds.length} unique tracks, fetching popularity...`;
+  status.textContent = `Loaded ${trackIds.length} unique tracks, fetching popularity...`;
 
   const tracksData = [];
   for (let i = 0; i < trackIds.length; i += 50) {
@@ -90,7 +95,7 @@ async function main() {
 
   tracksData.sort((a, b) => b.popularity - a.popularity);
 
-  document.getElementById("status").textContent = "Creating playlist...";
+  status.textContent = "Creating playlist...";
   const me = await getJSON("https://api.spotify.com/v1/me", token);
   const playlist = await fetch(`https://api.spotify.com/v1/users/${me.id}/playlists`, {
     method: "POST",
@@ -107,10 +112,19 @@ async function main() {
     });
   }
 
-  document.getElementById("status").innerHTML = `✅ Playlist created: <a href="${playlist.external_urls.spotify}" target="_blank">${playlist.name}</a>`;
+  status.innerHTML = `✅ Playlist created: <a href="${playlist.external_urls.spotify}" target="_blank">${playlist.name}</a>`;
 }
 
-document.getElementById("go").onclick = main;
+// Page load
+const token = getTokenFromHash();
+if (token) {
+  document.getElementById("login").style.display = "none";
+  document.getElementById("app").style.display = "block";
+}
+
+// Event listeners
+document.getElementById("login").onclick = login;
+document.getElementById("go").onclick = () => main(token);
 </script>
 </body>
 </html>
